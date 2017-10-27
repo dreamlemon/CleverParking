@@ -2,6 +2,7 @@ package com.dream.lemon.hackathon.ui.home;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.dream.lemon.hackathon.R;
+import com.dream.lemon.hackathon.data.Parking;
 import com.dream.lemon.hackathon.data.PlaceRecord;
 import com.dream.lemon.hackathon.ui.adapter.TempAdapter;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -29,12 +31,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 import butterknife.BindView;
@@ -43,7 +49,7 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class HomeActivity extends AppCompatActivity implements HomeContract.View, OnMapReadyCallback {
+public class HomeActivity extends AppCompatActivity implements HomeContract.View, OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 96;
     private static final int DEFAULT_ZOOM = 15;
@@ -150,10 +156,16 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
     }
 
-    private void setMarkerOnLocation(Location location) {
+    private void moveCameraToPosition(double latitude, double longitude) {
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(latitude, longitude), DEFAULT_ZOOM));
+    }
+
+    private void setMarkerOnLocation(Parking parking, int icon) {
         map.addMarker(new MarkerOptions()
-                .position(new LatLng(location.getLatitude(), location.getLongitude()))
-                .title("Park"));
+                .position(new LatLng(parking.getLatitute(), parking.getLongitude()))
+                .title("Park")
+                .icon(BitmapDescriptorFactory.fromResource(icon)));
     }
 
     @Override
@@ -170,6 +182,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             PlaceRecord placeRecord = new PlaceRecord(place.getAddress().toString(), place.getName().toString(),
                     place.getLatLng().toString(), null);
             realm.copyToRealm(placeRecord);
+            Parking parking = new Parking("", place.getLatLng().latitude, place.getLatLng().longitude);
+            setMarkerOnLocation(parking, R.drawable.ic_marker_user);
+            moveCameraToPosition(parking.getLatitute(), parking.getLongitude());
         }
     }
 
@@ -182,6 +197,12 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     }
                 });
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        return false;
     }
 
     @OnClick(R.id.btn_where_to)
@@ -199,6 +220,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     @OnClick(R.id.button_nearby)
     public void onClickButtonNearby() {
+        updateLocationUI();
+        getDeviceLocation();
         recentSearchLayoutView.setVisibility(View.GONE);
     }
 
@@ -213,4 +236,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         List<PlaceRecord> items = realm.copyFromRealm(realmResults);
         configureList(items);
     }
+
+
 }
