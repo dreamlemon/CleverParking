@@ -53,7 +53,6 @@ public class TempAdapter extends RecyclerView.Adapter<TempAdapter.TempViewHolder
     public TempViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.temp_cell_layout, viewGroup, false);
-        v.getBackground().setAlpha(100);
         return new TempViewHolder(v);
     }
 
@@ -62,5 +61,4 @@ public class TempAdapter extends RecyclerView.Adapter<TempAdapter.TempViewHolder
         viewHolder.place.setText(data.get(i).getName());
         viewHolder.bind(data.get(i), listener);
     }
-
 }

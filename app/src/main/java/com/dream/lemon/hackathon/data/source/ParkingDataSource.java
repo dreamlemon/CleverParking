@@ -1,5 +1,5 @@
 package com.dream.lemon.hackathon.data.source;
 
-public class ParkingDataSource {
+public interface ParkingDataSource {
 
 }
