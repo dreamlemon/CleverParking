@@ -33,6 +33,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -157,8 +158,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        updateLocationUI();
-        getDeviceLocation();
     }
 
     private void updateLocationUI() {
@@ -192,6 +191,12 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             });
         } catch(SecurityException e)  {
         }
+    }
+
+    public void setMarkerOnLocation(Location location) {
+        map.addMarker(new MarkerOptions()
+                .position(new LatLng(location.getLatitude(), location.getLongitude()))
+                .title("Park"));
     }
 
     @OnClick(R.id.btn_where_to)
