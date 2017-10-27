@@ -8,16 +8,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.dream.lemon.hackathon.R;
-import com.dream.lemon.hackathon.data.Parking;
 import com.dream.lemon.hackathon.data.PlaceRecord;
 import com.dream.lemon.hackathon.pojosJSON.Binding;
-import com.dream.lemon.hackathon.pojosJSON.ParkingJSON;
 import com.dream.lemon.hackathon.ui.adapter.TempAdapter;
 import com.dream.lemon.hackathon.ui.welcome.WelcomeActivity;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -33,7 +30,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -42,16 +38,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.google.maps.android.geometry.Point;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.BitSet;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -59,11 +48,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeActivity extends AppCompatActivity implements HomeContract.View, OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -180,9 +164,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 new LatLng(latitude, longitude), DEFAULT_ZOOM));
     }
 
-    private void setMarkerOnLocation(Parking parking, int icon) {
+    private void setMarkerOnLocation(Place place, int icon) {
         map.addMarker(new MarkerOptions()
-                .position(new LatLng(parking.getLatitute(), parking.getLongitude()))
+                .position(new LatLng(place.getLatLng().latitude, place.getLatLng().longitude))
                 .title("Park")
                 .icon(BitmapDescriptorFactory.fromResource(icon)));
 
@@ -202,9 +186,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             PlaceRecord placeRecord = new PlaceRecord(place.getAddress().toString(), place.getName().toString(),
                     place.getLatLng().toString(), null);
             realm.copyToRealm(placeRecord);
-            Parking parking = new Parking("", place.getLatLng().latitude, place.getLatLng().longitude);
-            setMarkerOnLocation(parking, R.drawable.ic_marker_user);
-            moveCameraToPosition(parking.getLatitute(), parking.getLongitude());
+
+            setMarkerOnLocation(place, R.drawable.ic_marker_user);
+            moveCameraToPosition(place.getLatLng().latitude, place.getLatLng().longitude);
         }
     }
 
