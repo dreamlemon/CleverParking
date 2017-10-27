@@ -152,6 +152,16 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                 new LatLng(lastKnownLocation.getLatitude(),
                                         lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+
+                        List<LatLng> result = getNearParkins(lastKnownLocation.getAltitude(),
+                                lastKnownLocation.getLongitude());
+                        for (LatLng latLng : result) {
+                            PlaceRecord placeRecord = new PlaceRecord();
+                            placeRecord.setLog(latLng.longitude);
+                            placeRecord.setLat(latLng.latitude);
+                            setMarkerOnLocation(placeRecord, R.drawable.ic_marker_unused);
+                        }
+
                     } else {
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                         map.getUiSettings().setMyLocationButtonEnabled(false);
@@ -306,8 +316,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         int kmInDec = Integer.valueOf(newFormat.format(km));
         double meter = valueResult % 1000;
         int meterInDec = Integer.valueOf(newFormat.format(meter));
-        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
-                + " Meter   " + meterInDec);
 
         return Radius * c;
     }
