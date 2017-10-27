@@ -1,7 +1,6 @@
 package com.dream.lemon.hackathon.ui.home;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteException;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,13 +8,17 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.dream.lemon.hackathon.R;
 import com.dream.lemon.hackathon.data.PlaceRecord;
+import com.dream.lemon.hackathon.pojosJSON.Binding;
+import com.dream.lemon.hackathon.pojosJSON.ParkingJSON;
 import com.dream.lemon.hackathon.ui.adapter.TempAdapter;
+import com.dream.lemon.hackathon.ui.welcome.WelcomeActivity;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,7 +36,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.google.maps.android.geometry.Point;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +52,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeActivity extends AppCompatActivity implements HomeContract.View, OnMapReadyCallback {
 
@@ -53,11 +68,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     private Realm realm;
 
-    GeoDataClient geoDataClient;
-    PlaceDetectionClient placeDetectionClient;
-    FusedLocationProviderClient fusedLocationProviderClient;
-    SupportMapFragment mapFragment;
-    GoogleMap map;
+    private GeoDataClient geoDataClient;
+    private PlaceDetectionClient placeDetectionClient;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private SupportMapFragment mapFragment;
+    private GoogleMap map;
     private Location lastKnownLocation;
     private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
 
@@ -105,9 +120,14 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         recyclerView.setLayoutManager(lManager);
 
         // Configure recent places searched
-        RealmResults<PlaceRecord> realmResults = realm.where(PlaceRecord.class).findAll();
+        final RealmResults<PlaceRecord> realmResults = realm.where(PlaceRecord.class).findAll();
         List<PlaceRecord> items = realm.copyFromRealm(realmResults);
         configureList(items);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://opendata.caceres.es/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
     }
 
     @Override
@@ -122,7 +142,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         try {
             map.setMyLocationEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(true);
-
         } catch (SecurityException e)  {
 
         }
@@ -178,7 +197,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 new TempAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(PlaceRecord item) {
-
+                        whereToButtonView.setText(item.getAddress());
+                        recentSearchLayoutView.setVisibility(View.GONE);
                     }
                 });
         recyclerView.setAdapter(adapter);
@@ -199,6 +219,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     @OnClick(R.id.button_nearby)
     public void onClickButtonNearby() {
+        updateLocationUI();
+        getDeviceLocation();
+
         recentSearchLayoutView.setVisibility(View.GONE);
     }
 
@@ -212,5 +235,16 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         RealmResults<PlaceRecord> realmResults = realm.where(PlaceRecord.class).findAll();
         List<PlaceRecord> items = realm.copyFromRealm(realmResults);
         configureList(items);
+    }
+
+    private void getNearParkins(double lat, double lon) {
+        ArrayList<LatLng> latLongList = new ArrayList<>();
+        for (Binding parking : WelcomeActivity.parkingJSONS.getBindings()) {
+            LatLng latLng = new LatLng(Double.parseDouble(parking.getGeoLat().getValue()),
+                    Double.parseDouble(parking.getGeoLong().getValue()));
+            latLongList.add(latLng);
+        }
+
+
     }
 }
