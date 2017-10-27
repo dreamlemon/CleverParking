@@ -44,19 +44,13 @@ public class HomeFragment extends Fragment implements HomeContract.View, OnMapRe
     private RecyclerView.LayoutManager lManager;
 
     Realm realm;
+    List items;
 
     @BindView(R.id.btn_where_to) Button whereToButtonView;
     @BindView(R.id.lyt_recent_search) LinearLayout recentSearchLayoutView;
     @BindView(R.id.tempList) RecyclerView recyclerView;
 
-    @BindView(R.id.btn_where_to)
-    Button whereToButtonView;
-    @BindView(R.id.button_nearby)
-    Button nearbyButtonView;
-    @BindView(R.id.lyt_recent_search)
-    LinearLayout recentSearchLayoutView;
-    @BindView(R.id.tempList)
-    RecyclerView recycler;
+    @BindView(R.id.button_nearby) Button nearbyButtonView;
 
     public static HomeFragment newInstance() {
         return new HomeFragment();
