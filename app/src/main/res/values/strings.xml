@@ -5,7 +5,7 @@
     <string name="recent_searches">Recent searches</string>
     <string name="no_recent_searches">There are no recent searches</string>
     <string name="back">Go back</string>
-    <string name="confirm">Confirm</string>
+    <string name="confirm">Quick search</string>
     <string name="welcome_title">Smart parking search</string>
     <string name="welcome_body">Choose the place you want to go and select the closest parking spaces. Afterwards we will take you to the square that you select from your current location.</string>
     <string name="continue_button">Continue</string>

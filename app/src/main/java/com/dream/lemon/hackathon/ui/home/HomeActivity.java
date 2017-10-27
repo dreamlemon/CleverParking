@@ -74,6 +74,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private Location lastKnownLocation;
     private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
 
+    private List<LatLng> nearestResults;
+
     @BindView(R.id.btn_where_to)        Button whereToButtonView;
     @BindView(R.id.lyt_recent_search)   LinearLayout recentSearchLayoutView;
     @BindView(R.id.tempList)            RecyclerView recyclerView;
@@ -155,15 +157,17 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                                 new LatLng(lastKnownLocation.getLatitude(),
                                         lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
 
-                        List<LatLng> result = getNearParkins(lastKnownLocation.getAltitude(),
+                        nearestResults = getNearParkins(lastKnownLocation.getLatitude(),
                                 lastKnownLocation.getLongitude());
-                        for (LatLng latLng : result) {
+                        int i = 0;
+                        for (LatLng latLng : nearestResults) {
                             PlaceRecord placeRecord = new PlaceRecord();
                             placeRecord.setLog(latLng.longitude);
                             placeRecord.setLat(latLng.latitude);
-                            setMarkerOnLocation(placeRecord, R.drawable.ic_marker_unused);
+                            setMarkerOnLocation(placeRecord, R.drawable.ic_marker_unused,"park"+i);
+                            i++;
                         }
-
+                        i = 0;
                     } else {
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                         map.getUiSettings().setMyLocationButtonEnabled(false);
@@ -180,16 +184,21 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 new LatLng(latitude, longitude), DEFAULT_ZOOM));
     }
 
-    private void setMarkerOnLocation(PlaceRecord place, int icon) {
-        map.addMarker(new MarkerOptions()
+    private MarkerOptions setMarkerOnLocation(PlaceRecord place, int icon, String title) {
+        MarkerOptions marker = new MarkerOptions()
                 .position(new LatLng(place.getLat(), place.getLog()))
-                .icon(BitmapDescriptorFactory.fromResource(icon)));
+                .icon(BitmapDescriptorFactory.fromResource(icon))
+                .title(title);
+        map.addMarker(marker);
+        return marker;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
+            map.clear();
+
             Place place = PlaceAutocomplete.getPlace(this, data);
             whereToButtonView.setText(place.getAddress());
             whereToButtonView.setAllCaps(false);
@@ -203,8 +212,19 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             placeRecord.setLog(place.getLatLng().longitude);
             realm.copyToRealm(placeRecord);
 
-            setMarkerOnLocation(placeRecord, R.drawable.ic_marker_user);
+            setMarkerOnLocation(placeRecord, R.drawable.ic_marker_user, "user");
             moveCameraToPosition(place.getLatLng().latitude, place.getLatLng().longitude);
+
+            nearestResults = getNearParkins(place.getLatLng().latitude, place.getLatLng().longitude);
+            int i = 0;
+            for (LatLng latLng : nearestResults) {
+                PlaceRecord placeRecordParkins = new PlaceRecord();
+                placeRecordParkins.setLog(latLng.longitude);
+                placeRecordParkins.setLat(latLng.latitude);
+                setMarkerOnLocation(placeRecordParkins, R.drawable.ic_marker_unused,"park"+i);
+                i++;
+            }
+            i = 0;
         }
     }
 
@@ -213,22 +233,43 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 new TempAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(PlaceRecord item) {
+                        map.clear();
+
                         whereToButtonView.setText(item.getAddress());
                         recentSearchLayoutView.setVisibility(View.GONE);
 
-                        setMarkerOnLocation(item, R.drawable.ic_marker_user);
+                        setMarkerOnLocation(item, R.drawable.ic_marker_user,"user");
                         moveCameraToPosition(item.getLat(), item.getLog());
+
+                        nearestResults = getNearParkins(item.getLat(), item.getLog());
+                        int i = 0;
+                        for (LatLng latLng : nearestResults) {
+                            PlaceRecord placeRecordParkins = new PlaceRecord();
+                            placeRecordParkins.setLog(latLng.longitude);
+                            placeRecordParkins.setLat(latLng.latitude);
+                            setMarkerOnLocation(placeRecordParkins, R.drawable.ic_marker_unused,"park"+i);
+                            i++;
+                        }
+                        i = 0;
                     }
                 });
         recyclerView.setAdapter(adapter);
     }
 
+    private Marker selectedMark;
+
     @Override
     public boolean onMarkerClick(Marker marker) {
-        database.child("usedLocations").child(marker.getId()).setValue(true);
-        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_selected));
+        if(!marker.getTitle().equalsIgnoreCase("user")) {
+            if(selectedMark != null && !selectedMark.getTitle().equalsIgnoreCase(marker.getTitle())) {
+                selectedMark.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_unused));
+            }
+            database.child("usedLocations").child(marker.getId()).setValue(true);
+            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_selected));
 
-        selectedParking = marker.getPosition();
+            selectedParking = marker.getPosition();
+            selectedMark = marker;
+        }
         return false;
     }
 
@@ -269,7 +310,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     @OnClick(R.id.btn_confirm)
     public void goToSelectedPosition() {
-
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(nearestResults.get(0).latitude,
+                        nearestResults.get(0).longitude), DEFAULT_ZOOM));
     }
 
     private ArrayList<LatLng> getNearParkins(double lat, double lon) {
@@ -282,7 +325,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         LatLng givenPosition = new LatLng(lat,lon);
         ArrayList<LatLng> selectedPositions = new ArrayList<>();
         selectedPositions.add(0, latLongList.get(0));
-
+        /*
         for (int i=0; i<latLongList.size(); i++) {
             LatLng parking = latLongList.get(i);
             double distance = calculationByDistance(givenPosition, parking);
@@ -290,9 +333,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             if(distance < currentDistance) {
                 selectedPositions.set(0, parking);
             }
-        }
+        }*/
 
-        /*
+
         selectedPositions.add(1, latLongList.get(1));
         selectedPositions.add(2, latLongList.get(2));
         selectedPositions.add(3, latLongList.get(3));
@@ -303,7 +346,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             if(newDistance < biggerDistance) {
                 selectedPositions.set(biggerIndex, parking);
             }
-        }*/
+        }
         return selectedPositions;
     }
 
