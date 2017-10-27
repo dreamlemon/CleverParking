@@ -1,15 +1,15 @@
-package com.dream.lemon.hackathon.ui.welcome;
+package com.dream.lemon.hackathon.ui.home;
 
 import com.dream.lemon.hackathon.arch.BasePresenter;
 import com.dream.lemon.hackathon.arch.BaseView;
 
-public interface WelcomeContract {
+public interface HomeContract {
 
     interface View extends BaseView<Presenter> {
-        void presentNextModule();
+
     }
 
     interface Presenter extends BasePresenter {
-        void continueButtonTapped();
+
     }
 }

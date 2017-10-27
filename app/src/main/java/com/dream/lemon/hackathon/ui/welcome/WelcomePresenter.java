@@ -20,4 +20,9 @@ public class WelcomePresenter implements WelcomeContract.Presenter {
     public void start() {
         view.setPresenter(this);
     }
+
+    @Override
+    public void continueButtonTapped() {
+        view.presentNextModule();
+    }
 }

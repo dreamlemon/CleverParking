@@ -12,13 +12,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDXWASCWVVfkk9I6Nsat82yPsbA4l4dpT4"/>
+
         <activity android:name=".ui.welcome.WelcomeActivity">
+        </activity>
+
+        <activity android:name=".ui.home.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-
+        <activity android:name=".ui.Map.MapActivity"/>
+        <activity android:name=".ui.home.HomeActivity"/>
     </application>
 </manifest>

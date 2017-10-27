@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">hackathon-open-data</string>
+    <string name="where_to">Where to</string>
+    <string name="nearby">Nearby</string>
+    <string name="recent_searches">Recent searches</string>
+    <string name="no_recent_searches">There are no recent searches</string>
+    <string name="back">Go back</string>
+    <string name="confirm">Confirm</string>
+    <string name="welcome_title">Smart parking search</string>
+    <string name="welcome_body">Choose the place you want to go and select the closest parking spaces. Afterwards we will take you to the square that you select from your current location.</string>
+    <string name="continue_button">Continue</string>
+
+    <string name="selected_place">Last Selected Place:</string>
+    <string name="place_details">
+    <![CDATA[
+        <b>%1$s</b>
+        <br/>
+        <i>Place Id: %2$s</i>
+        <br/>
+        Address: %3$s
+        <br/>
+        Phone: %4$s
+        <br/>
+        Website: %5$s
+    ]]>
+    </string>
 </resources>
