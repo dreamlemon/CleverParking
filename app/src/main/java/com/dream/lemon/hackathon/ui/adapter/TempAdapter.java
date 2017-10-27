@@ -8,21 +8,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dream.lemon.hackathon.R;
+import com.dream.lemon.hackathon.data.PlaceRecord;
 import com.google.android.gms.location.places.Place;
 
 import java.util.List;
 
-/**
- * Created by jalcantara on 27/10/2017.
- */
-
 public class TempAdapter extends RecyclerView.Adapter<TempAdapter.TempViewHolder> {
 
-    private List<Place> data;
+    private List<PlaceRecord> data;
     private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
-        void onItemClick(Place item);
+        void onItemClick(PlaceRecord item);
     }
 
     public static class TempViewHolder extends RecyclerView.ViewHolder {
@@ -33,7 +30,7 @@ public class TempAdapter extends RecyclerView.Adapter<TempAdapter.TempViewHolder
             place = (TextView) v.findViewById(R.id.TempAdapter);
         }
 
-        public void bind(final Place item, final OnItemClickListener listener) {
+        public void bind(final PlaceRecord item, final OnItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemClick(item);
@@ -42,7 +39,7 @@ public class TempAdapter extends RecyclerView.Adapter<TempAdapter.TempViewHolder
         }
     }
 
-    public TempAdapter(List<Place> data, OnItemClickListener listener) {
+    public TempAdapter(List<PlaceRecord> data, OnItemClickListener listener) {
         this.data = data;
         this.listener = listener;
     }
