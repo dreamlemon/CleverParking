@@ -50,6 +50,7 @@ import com.google.maps.android.geometry.Point;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Array;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -260,14 +261,64 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         configureList(items);
     }
 
-    private void getNearParkins(double lat, double lon) {
+    private ArrayList<LatLng> getNearParkins(double lat, double lon) {
         ArrayList<LatLng> latLongList = new ArrayList<>();
         for (Binding parking : WelcomeActivity.parkingJSONS.getBindings()) {
             LatLng latLng = new LatLng(Double.parseDouble(parking.getGeoLat().getValue()),
                     Double.parseDouble(parking.getGeoLong().getValue()));
             latLongList.add(latLng);
         }
+        LatLng givenPosition = new LatLng(lat,lon);
+        ArrayList<LatLng> selectedPositions = new ArrayList<>();
+        selectedPositions.add(0, latLongList.get(0));
+        selectedPositions.add(1, latLongList.get(1));
+        selectedPositions.add(2, latLongList.get(2));
+        selectedPositions.add(3, latLongList.get(3));
+        for (LatLng parking : latLongList) {
+            double newDistance = calculationByDistance(givenPosition, parking);
+            int biggerIndex = getLongestDistanceIndex(givenPosition,selectedPositions);
+            double biggerDistance = calculationByDistance(givenPosition, selectedPositions.get(biggerIndex));
+            if(newDistance < biggerDistance) {
+                selectedPositions.set(biggerIndex, parking);
+            }
+        }
+        return selectedPositions;
+    }
 
+    public int getLongestDistanceIndex(LatLng givenPosition, ArrayList<LatLng> selectedPositions) {
+        int biggerPositionIndex = 0;
+        for(int i=0; i < selectedPositions.size(); i++) {
+            double biggerPosDistance = calculationByDistance(givenPosition,selectedPositions.get(biggerPositionIndex));
+            double selectedPosDistance = calculationByDistance(givenPosition,selectedPositions.get(biggerPositionIndex));
+            if(biggerPosDistance < selectedPosDistance) {
+                biggerPositionIndex = i;
+            }
+        }
+        return biggerPositionIndex;
+    }
 
+    public double calculationByDistance(LatLng StartP, LatLng EndP) {
+        int Radius = 6371;// radius of earth in Km
+        double lat1 = StartP.latitude;
+        double lat2 = EndP.latitude;
+        double lon1 = StartP.longitude;
+        double lon2 = EndP.longitude;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        int kmInDec = Integer.valueOf(newFormat.format(km));
+        double meter = valueResult % 1000;
+        int meterInDec = Integer.valueOf(newFormat.format(meter));
+        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
+                + " Meter   " + meterInDec);
+
+        return Radius * c;
     }
 }
