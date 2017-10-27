@@ -25,7 +25,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDXWASCWVVfkk9I6Nsat82yPsbA4l4dpT4"/>
 
-        <activity android:name=".ui.welcome.WelcomeActivity">
+        <activity android:name=".ui.welcome.WelcomeActivity"
+            android:theme="@style/WelcomeTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

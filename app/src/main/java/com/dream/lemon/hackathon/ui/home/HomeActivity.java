@@ -164,12 +164,10 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 new LatLng(latitude, longitude), DEFAULT_ZOOM));
     }
 
-    private void setMarkerOnLocation(Place place, int icon) {
+    private void setMarkerOnLocation(PlaceRecord place, int icon) {
         map.addMarker(new MarkerOptions()
-                .position(new LatLng(place.getLatLng().latitude, place.getLatLng().longitude))
-                .title("Park")
+                .position(new LatLng(place.getLat(), place.getLog()))
                 .icon(BitmapDescriptorFactory.fromResource(icon)));
-
     }
 
     @Override
@@ -185,9 +183,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             realm.beginTransaction();
             PlaceRecord placeRecord = new PlaceRecord(place.getAddress().toString(), place.getName().toString(),
                     place.getLatLng().toString(), null);
+            placeRecord.setLat(place.getLatLng().latitude);
+            placeRecord.setLog(place.getLatLng().longitude);
             realm.copyToRealm(placeRecord);
 
-            setMarkerOnLocation(place, R.drawable.ic_marker_user);
+            setMarkerOnLocation(placeRecord, R.drawable.ic_marker_user);
             moveCameraToPosition(place.getLatLng().latitude, place.getLatLng().longitude);
         }
     }
@@ -199,6 +199,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     public void onItemClick(PlaceRecord item) {
                         whereToButtonView.setText(item.getAddress());
                         recentSearchLayoutView.setVisibility(View.GONE);
+
+                        setMarkerOnLocation(item, R.drawable.ic_marker_user);
+                        moveCameraToPosition(item.getLat(), item.getLog());
                     }
                 });
         recyclerView.setAdapter(adapter);
@@ -251,7 +254,5 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     Double.parseDouble(parking.getGeoLong().getValue()));
             latLongList.add(latLng);
         }
-
-
     }
 }

@@ -3,9 +3,9 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="220dp"
         android:orientation="vertical"
         android:background="@drawable/background">
 
@@ -16,7 +16,7 @@
             android:layout_marginLeft="20dp"
             android:background="@color/transparent"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="50dp"
             android:text="@string/where_to"
             android:textColor="@color/white"
             android:textAlignment="textStart"
@@ -38,9 +38,10 @@
             android:layout_gravity="start"
             android:textAllCaps="false"
             android:text="@string/nearby"
-            android:layout_marginBottom="40dp"/>
+            android:layout_marginBottom="25dp"
+            android:layout_alignParentBottom="true"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"

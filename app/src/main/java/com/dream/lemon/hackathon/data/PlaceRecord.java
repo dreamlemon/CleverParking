@@ -11,6 +11,9 @@ public class PlaceRecord extends RealmObject {
     String latLng;
     String attributions;
 
+    double lat;
+    double log;
+
     public PlaceRecord() {
 
     }
@@ -53,5 +56,21 @@ public class PlaceRecord extends RealmObject {
 
     public void setAttributions(String attributions) {
         this.attributions = attributions;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLog() {
+        return log;
+    }
+
+    public void setLog(double log) {
+        this.log = log;
     }
 }
