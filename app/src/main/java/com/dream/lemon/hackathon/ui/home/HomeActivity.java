@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.dream.lemon.hackathon.R;
+import com.dream.lemon.hackathon.data.Parking;
 import com.dream.lemon.hackathon.data.PlaceRecord;
 import com.dream.lemon.hackathon.pojosJSON.Binding;
 import com.dream.lemon.hackathon.pojosJSON.ParkingJSON;
@@ -32,10 +33,15 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -45,6 +51,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 import butterknife.BindView;
@@ -58,15 +65,16 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class HomeActivity extends AppCompatActivity implements HomeContract.View, OnMapReadyCallback {
+public class HomeActivity extends AppCompatActivity implements HomeContract.View, OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 96;
     private static final int DEFAULT_ZOOM = 15;
 
     private HomeContract.Presenter presenter;
     private RecyclerView.LayoutManager lManager;
-
+    private DatabaseReference database;
     private Realm realm;
+    private String selectedPlaceID;
 
     private GeoDataClient geoDataClient;
     private PlaceDetectionClient placeDetectionClient;
@@ -110,7 +118,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         mapFragment.getMapAsync(this);
 
         geoDataClient = Places.getGeoDataClient(this, null);
-
         placeDetectionClient = Places.getPlaceDetectionClient(this, null);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -124,15 +131,14 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         List<PlaceRecord> items = realm.copyFromRealm(realmResults);
         configureList(items);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://opendata.caceres.es/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        //Firebase
+        database = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+        map.setOnMarkerClickListener((GoogleMap.OnMarkerClickListener) this);
     }
 
     private void updateLocationUI() {
@@ -169,10 +175,17 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
     }
 
-    private void setMarkerOnLocation(Location location) {
+    private void moveCameraToPosition(double latitude, double longitude) {
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(latitude, longitude), DEFAULT_ZOOM));
+    }
+
+    private void setMarkerOnLocation(Parking parking, int icon) {
         map.addMarker(new MarkerOptions()
-                .position(new LatLng(location.getLatitude(), location.getLongitude()))
-                .title("Park"));
+                .position(new LatLng(parking.getLatitute(), parking.getLongitude()))
+                .title("Park")
+                .icon(BitmapDescriptorFactory.fromResource(icon)));
+
     }
 
     @Override
@@ -189,6 +202,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             PlaceRecord placeRecord = new PlaceRecord(place.getAddress().toString(), place.getName().toString(),
                     place.getLatLng().toString(), null);
             realm.copyToRealm(placeRecord);
+            Parking parking = new Parking("", place.getLatLng().latitude, place.getLatLng().longitude);
+            setMarkerOnLocation(parking, R.drawable.ic_marker_user);
+            moveCameraToPosition(parking.getLatitute(), parking.getLongitude());
         }
     }
 
@@ -202,6 +218,13 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     }
                 });
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        database.child("usedLocations").child(marker.getId()).setValue(true);
+        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_selected));
+        return false;
     }
 
     @OnClick(R.id.btn_where_to)

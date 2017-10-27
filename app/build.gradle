@@ -28,6 +28,7 @@ configurations.all {
 
 dependencies {
     // Core dependencies
+    compile 'com.google.firebase:firebase-database:11.4.2'
     compile 'com.android.support:support-v4:27.0.0'
     compile 'com.google.android.gms:play-services-base:11.4.2'
     compile 'com.google.android.gms:play-services-places:11.4.2'
@@ -48,3 +49,5 @@ dependencies {
     // Annotations
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
