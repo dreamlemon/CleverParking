@@ -87,7 +87,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     public void onStart() {
         super.onStart();
         Realm.init(this);
-        presenter.start();
     }
 
     @Override
@@ -97,7 +96,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         ButterKnife.bind(this);
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        //mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(this);
+        geoDataClient = Places.getGeoDataClient(this, null);
+        placeDetectionClient = Places.getPlaceDetectionClient(this, null);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
 
         items = new ArrayList();
 
@@ -154,10 +157,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        GeoDataClient geoDataClient = Places.getGeoDataClient(this, null);
-        PlaceDetectionClient placeDetectionClient = Places.getPlaceDetectionClient(this, null);
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
         updateLocationUI();
         getDeviceLocation();
     }
