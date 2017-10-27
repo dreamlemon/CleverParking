@@ -50,6 +50,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class HomeFragment extends Fragment implements HomeContract.View, OnMapReadyCallback {
 
@@ -57,7 +58,6 @@ public class HomeFragment extends Fragment implements HomeContract.View, OnMapRe
     private static final int DEFAULT_ZOOM = 15;
 
     private HomeContract.Presenter presenter;
-    private RecyclerView.LayoutManager lManager;
 
     Realm realm;
     List items;
@@ -100,45 +100,20 @@ public class HomeFragment extends Fragment implements HomeContract.View, OnMapRe
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, rootView);
-        //Recycler
-        items = new ArrayList();
 
         realm = Realm.getDefaultInstance();
-
-        whereToButtonView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-                            .build(getActivity());
-                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-                } catch (GooglePlayServicesRepairableException e) {
-                    e.printStackTrace();
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
 
         recyclerView.setHasFixedSize(true);
 
         RecyclerView.LayoutManager lManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(lManager);
 
-        try {
-            RealmResults<PlaceRecord> realmResults = realm.where(PlaceRecord.class).findAll();
-            List<PlaceRecord> items = realm.copyFromRealm(realmResults);
-            RecyclerView.Adapter adapter = new TempAdapter(items,
-                    new TempAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(PlaceRecord item) {
-
-                }
-            });
-            recyclerView.setAdapter(adapter);
-        } catch (SQLiteException e) {
-
+        RealmResults<PlaceRecord> realmResults = realm.where(PlaceRecord.class).findAll();
+        List<PlaceRecord> items = realm.copyFromRealm(realmResults);
+        if (items.size() > 6) {
+            items = items.subList(0, 6);
         }
+        configureList(items);
 
         return rootView;
     }
@@ -153,6 +128,7 @@ public class HomeFragment extends Fragment implements HomeContract.View, OnMapRe
         PlaceRecord placeRecord = new PlaceRecord(place.getAddress().toString(), place.getName().toString(),
                 place.getLatLng().toString(), null);
         realm.copyToRealm(placeRecord);
+        realm.commitTransaction();
     }
 
     @Override
@@ -178,34 +154,6 @@ public class HomeFragment extends Fragment implements HomeContract.View, OnMapRe
         }
     }
 
-    private void getDeviceLocation() {
-        try {
-            Task locationResult = fusedLocationProviderClient.getLastLocation();
-            locationResult.addOnCompleteListener(getActivity(), new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if (task.isSuccessful()) {
-                        lastKnownLocation = (Location) task.getResult();
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(lastKnownLocation.getLatitude(),
-                                        lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                    } else {
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
-                        map.getUiSettings().setMyLocationButtonEnabled(false);
-                    }
-                }
-            });
-        } catch(SecurityException e)  {
-        }
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-    }
-
     @OnClick(R.id.btn_where_to)
     public void onClickButtonWhere() {
         try {
@@ -227,6 +175,15 @@ public class HomeFragment extends Fragment implements HomeContract.View, OnMapRe
     @OnClick(R.id.btn_back)
     public void onClickButtonBack() {
         recentSearchLayoutView.setVisibility(View.VISIBLE);
-    }
 
+        whereToButtonView.setText(getString(R.string.where_to));
+        whereToButtonView.setAllCaps(false);
+
+        RealmResults<PlaceRecord> realmResults = realm.where(PlaceRecord.class).findAll();
+        List<PlaceRecord> items = realm.copyFromRealm(realmResults);
+        if (items.size() > 6) {
+            items = items.subList(0, 6);
+        }
+        configureList(items);
+    }
 }
