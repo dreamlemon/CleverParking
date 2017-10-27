@@ -211,6 +211,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             placeRecord.setLat(place.getLatLng().latitude);
             placeRecord.setLog(place.getLatLng().longitude);
             realm.copyToRealm(placeRecord);
+            realm.commitTransaction();
 
             setMarkerOnLocation(placeRecord, R.drawable.ic_marker_user, "user");
             moveCameraToPosition(place.getLatLng().latitude, place.getLatLng().longitude);
