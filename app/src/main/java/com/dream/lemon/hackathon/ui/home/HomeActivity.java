@@ -38,6 +38,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -56,8 +58,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     private HomeContract.Presenter presenter;
     private RecyclerView.LayoutManager lManager;
-
+    private DatabaseReference database;
     private Realm realm;
+    private String selectedPlaceID;
 
     GeoDataClient geoDataClient;
     PlaceDetectionClient placeDetectionClient;
@@ -101,7 +104,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         mapFragment.getMapAsync(this);
 
         geoDataClient = Places.getGeoDataClient(this, null);
-
         placeDetectionClient = Places.getPlaceDetectionClient(this, null);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -114,11 +116,15 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         RealmResults<PlaceRecord> realmResults = realm.where(PlaceRecord.class).findAll();
         List<PlaceRecord> items = realm.copyFromRealm(realmResults);
         configureList(items);
+
+        //Firebase
+        database = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+        map.setOnMarkerClickListener((GoogleMap.OnMarkerClickListener) this);
     }
 
     private void updateLocationUI() {
@@ -166,6 +172,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 .position(new LatLng(parking.getLatitute(), parking.getLongitude()))
                 .title("Park")
                 .icon(BitmapDescriptorFactory.fromResource(icon)));
+
     }
 
     @Override
@@ -201,7 +208,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-
+        database.child("usedLocations").child(marker.getId()).setValue(true);
+        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_selected));
         return false;
     }
 
