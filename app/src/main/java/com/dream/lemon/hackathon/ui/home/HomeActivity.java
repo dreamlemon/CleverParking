@@ -79,7 +79,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @BindView(R.id.btn_where_to)        Button whereToButtonView;
     @BindView(R.id.lyt_recent_search)   LinearLayout recentSearchLayoutView;
     @BindView(R.id.tempList)            RecyclerView recyclerView;
-    @BindView(R.id.button_nearby)       LinearLayout nearbyButtonView;
+    @BindView(R.id.button_nearby_lyt)       LinearLayout nearbyButtonView;
 
     @Override
     public void setPresenter(HomeContract.Presenter presenter) {
@@ -247,7 +247,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                             PlaceRecord placeRecordParkins = new PlaceRecord();
                             placeRecordParkins.setLog(latLng.longitude);
                             placeRecordParkins.setLat(latLng.latitude);
-                            setMarkerOnLocation(placeRecordParkins, R.drawable.ic_marker_unused,"park"+i);
+                            setMarkerOnLocation(placeRecordParkins, R.drawable.ic_marker_unused,"Park "+i);
                             i++;
                         }
                         i = 0;
@@ -286,7 +286,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
     }
 
-    @OnClick(R.id.button_nearby)
+    @OnClick(R.id.button_nearby_lyt)
     public void onClickButtonNearby() {
         updateLocationUI();
         getDeviceLocation();
