@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/colorPrimaryDark">
+        android:background="@drawable/background">
 
         <Button
             android:id="@+id/btn_where_to"
@@ -17,9 +17,11 @@
             android:background="@color/transparent"
             android:layout_marginRight="20dp"
             android:layout_marginTop="60dp"
-            android:hint="@string/where_to"
+            android:text="@string/where_to"
+            android:textColor="@color/white"
             android:textAlignment="textStart"
             android:layout_gravity="start"
+            android:textAllCaps="false"
             android:textSize="28sp"/>
 
         <Button
@@ -31,6 +33,7 @@
             android:layout_marginTop="30dp"
             android:background="@color/transparent"
             android:textSize="21sp"
+            android:textColor="@color/white"
             android:textAlignment="textStart"
             android:layout_gravity="start"
             android:textAllCaps="false"
@@ -39,28 +42,112 @@
 
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="21sp"
-        android:textStyle="bold"
-        android:textAlignment="textStart"
-        android:text="@string/recent_searches"
-        android:textColor="#000000"
-        android:layout_gravity="start"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="20dp"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/lbl_no_recent_changes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="21sp"
-        android:textAlignment="textStart"
-        android:text="@string/no_recent_searches"
-        android:textColor="#000000"
-        android:layout_gravity="start"
-        android:layout_marginTop="15dp"
-        android:layout_marginLeft="20dp"/>
+        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical" android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
+            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                android:name="com.google.android.gms.maps.MapFragment"
+                android:id="@+id/map"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="61dp"
+                    android:layout_marginEnd="100dp"
+                    android:layout_marginRight="100dp"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal">
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/btn_confirm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_location" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/btn_back"
+                        android:textAlignment="center"
+                        android:text="@string/confirm"
+                        android:layout_marginTop="10dp"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginBottom="61dp"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginLeft="100dp"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal">
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/btn_back"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_back" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/btn_back"
+                        android:textAlignment="center"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/back"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/lyt_recent_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                android:textAlignment="textStart"
+                android:text="@string/recent_searches"
+                android:textColor="#000000"
+                android:layout_gravity="start"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="20dp"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/tempList"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"/>
+
+        </LinearLayout>
+    </FrameLayout>
 </LinearLayout>

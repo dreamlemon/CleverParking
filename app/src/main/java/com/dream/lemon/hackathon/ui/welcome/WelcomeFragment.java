@@ -53,7 +53,7 @@ public class WelcomeFragment extends Fragment implements WelcomeContract.View {
             }
         });
 
-        return null;
+        return rootView;
     }
 
     @Override

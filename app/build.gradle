@@ -29,7 +29,7 @@ dependencies {
     // Core dependencies
     compile 'com.android.support:support-v4:27.0.0'
     compile 'com.google.android.gms:play-services-base:11.4.2'
-    compile 'com.google.android.gms:play-services-identity:11.4.2'
+    compile 'com.google.android.gms:play-services-places:11.4.2'
     compile 'com.google.android.gms:play-services-maps:11.4.2'
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.jakewharton:butterknife:8.8.1'

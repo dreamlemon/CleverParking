@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00B0BE">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:orientation="vertical">
+
         <ImageView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:background="@drawable/ic_location"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="60dp"/>
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:background="@drawable/park_image"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="0dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="50dp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textColor="@color/white"
             android:text="@string/welcome_title"
             android:textSize="21sp"
             android:textStyle="bold"/>
@@ -31,6 +36,7 @@
             android:layout_marginTop="20dp"
             android:text="@string/welcome_body"
             android:layout_marginLeft="20dp"
+            android:textColor="@color/white"
             android:layout_marginRight="20dp"
             android:textAlignment="center"
             android:textSize="21sp"/></LinearLayout>
@@ -39,10 +45,12 @@
     <Button
         android:id="@+id/btn_continue"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_gravity="center_horizontal"
         android:text="@string/continue_button"
         android:layout_alignParentBottom="true"
+        android:background="#FF2A6A"
+        android:textColor="@color/white"
         android:layout_marginTop="60dp"/>
 
 </RelativeLayout>
