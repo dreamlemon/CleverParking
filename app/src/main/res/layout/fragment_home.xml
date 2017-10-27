@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <RelativeLayout
@@ -24,23 +25,35 @@
             android:textAllCaps="false"
             android:textSize="28sp"/>
 
-        <Button
+        <LinearLayout
             android:id="@+id/button_nearby"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="30dp"
-            android:background="@color/transparent"
-            android:textSize="21sp"
-            android:textColor="@color/white"
-            android:textAlignment="textStart"
-            android:layout_gravity="start"
-            android:textAllCaps="false"
-            android:text="@string/nearby"
             android:layout_marginBottom="25dp"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true"
+            android:gravity="center_vertical">
 
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_location" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:textSize="21sp"
+                android:textColor="@color/white"
+                android:textAlignment="textStart"
+                android:layout_gravity="start"
+                android:textAllCaps="false"
+                android:text="@string/nearby"
+                android:layout_marginLeft="10dp"/>
+        </LinearLayout>
     </RelativeLayout>
 
     <FrameLayout

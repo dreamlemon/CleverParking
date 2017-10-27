@@ -77,7 +77,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @BindView(R.id.btn_where_to)        Button whereToButtonView;
     @BindView(R.id.lyt_recent_search)   LinearLayout recentSearchLayoutView;
     @BindView(R.id.tempList)            RecyclerView recyclerView;
-    @BindView(R.id.button_nearby)       Button nearbyButtonView;
+    @BindView(R.id.button_nearby)       LinearLayout nearbyButtonView;
 
     @Override
     public void setPresenter(HomeContract.Presenter presenter) {
@@ -268,8 +268,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     }
 
     @OnClick(R.id.btn_confirm)
-    private void goToSelectedPosition() {
-        map.
+    public void goToSelectedPosition() {
+
     }
 
     private ArrayList<LatLng> getNearParkins(double lat, double lon) {
