@@ -1,0 +1,37 @@
+apply plugin: 'com.android.application'
+
+android {
+
+    compileSdkVersion 26
+    buildToolsVersion "25.0.3"
+
+    defaultConfig {
+        applicationId "com.dream.lemon.hackathon.hackathon_open_data"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    // Core dependencies
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.jakewharton:butterknife:8.8.1'
+    // UI dependencies
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'me.relex:circleindicator:1.2.2@aar'
+    // Annotations
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    compile 'com.android.support:support-v4:26.1.0'
+    compile 'com.android.support:recyclerview-v7:26.1.0'
+    compile 'com.google.android.gms:play-services:11.4.2'
+    compile 'com.google.android.gms:play-services-maps:11.4.2'
+}
