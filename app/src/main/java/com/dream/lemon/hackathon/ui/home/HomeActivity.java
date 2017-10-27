@@ -261,6 +261,17 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         LatLng givenPosition = new LatLng(lat,lon);
         ArrayList<LatLng> selectedPositions = new ArrayList<>();
         selectedPositions.add(0, latLongList.get(0));
+
+        for (int i=0; i<latLongList.size(); i++) {
+            LatLng parking = latLongList.get(i);
+            double distance = calculationByDistance(givenPosition, parking);
+            double currentDistance = calculationByDistance(givenPosition, selectedPositions.get(0));
+            if(distance < currentDistance) {
+                selectedPositions.set(0, parking);
+            }
+        }
+
+        /*
         selectedPositions.add(1, latLongList.get(1));
         selectedPositions.add(2, latLongList.get(2));
         selectedPositions.add(3, latLongList.get(3));
@@ -271,7 +282,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             if(newDistance < biggerDistance) {
                 selectedPositions.set(biggerIndex, parking);
             }
-        }
+        }*/
         return selectedPositions;
     }
 
@@ -279,7 +290,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         int biggerPositionIndex = 0;
         for(int i=0; i < selectedPositions.size(); i++) {
             double biggerPosDistance = calculationByDistance(givenPosition,selectedPositions.get(biggerPositionIndex));
-            double selectedPosDistance = calculationByDistance(givenPosition,selectedPositions.get(biggerPositionIndex));
+            double selectedPosDistance = calculationByDistance(givenPosition,selectedPositions.get(i));
             if(biggerPosDistance < selectedPosDistance) {
                 biggerPositionIndex = i;
             }
@@ -306,8 +317,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         int kmInDec = Integer.valueOf(newFormat.format(km));
         double meter = valueResult % 1000;
         int meterInDec = Integer.valueOf(newFormat.format(meter));
-        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
-                + " Meter   " + meterInDec);
 
         return Radius * c;
     }
