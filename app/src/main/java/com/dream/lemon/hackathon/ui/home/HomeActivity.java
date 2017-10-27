@@ -64,6 +64,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private Realm realm;
     private String selectedPlaceID;
 
+    private LatLng selectedParking;
+
     private GeoDataClient geoDataClient;
     private PlaceDetectionClient placeDetectionClient;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -225,6 +227,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     public boolean onMarkerClick(Marker marker) {
         database.child("usedLocations").child(marker.getId()).setValue(true);
         marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_selected));
+
+        selectedParking = marker.getPosition();
         return false;
     }
 
@@ -259,6 +263,13 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         RealmResults<PlaceRecord> realmResults = realm.where(PlaceRecord.class).findAll();
         List<PlaceRecord> items = realm.copyFromRealm(realmResults);
         configureList(items);
+
+        map.clear();
+    }
+
+    @OnClick(R.id.btn_confirm)
+    private void goToSelectedPosition() {
+        map.
     }
 
     private ArrayList<LatLng> getNearParkins(double lat, double lon) {
@@ -289,7 +300,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         int biggerPositionIndex = 0;
         for(int i=0; i < selectedPositions.size(); i++) {
             double biggerPosDistance = calculationByDistance(givenPosition,selectedPositions.get(biggerPositionIndex));
-            double selectedPosDistance = calculationByDistance(givenPosition,selectedPositions.get(biggerPositionIndex));
+            double selectedPosDistance = calculationByDistance(givenPosition,selectedPositions.get(i));
             if(biggerPosDistance < selectedPosDistance) {
                 biggerPositionIndex = i;
             }
