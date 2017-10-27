@@ -72,7 +72,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private SupportMapFragment mapFragment;
     private GoogleMap map;
     private Location lastKnownLocation;
-    private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
+    private final LatLng defaultLocation = new LatLng(39.4716313,-6.4257387);
 
     private List<LatLng> nearestResults;
 
